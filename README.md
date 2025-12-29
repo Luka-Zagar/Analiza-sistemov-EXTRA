@@ -3,7 +3,6 @@
 Ta repozitorij vsebuje rešitev dodatne naloge pri predmetu **Analiza sistemov**. Projekt zajema "reverse engineering" (obratni inženiring) neznanega električnega vezja na podlagi vhodno-izhodnih podatkov, omejene topologije in delnih informacij o komponentah.
 
 ![Rezultat simulacije](vizualizacija.png)
-*(Opomba: Zgornji graf prikazuje ujemanje simuliranega odziva z asimptotami sistema)*
 
 ## Opis problema
 
@@ -21,10 +20,6 @@ Reševanje je potekalo v treh fazah: topološka analiza, določitev parametrov i
 
 ### 1. Topološka analiza in izločanje
 Na podlagi "skritega namiga" v navodilih (*če bi bila položaja $R_1$ in $R_2$ zamenjana, se grafi ne bi spremenili*), smo lahko drastično zmanjšali število možnih kombinacij. Ta simetrija nakazuje, da $R_1$ in $R_2$ nastopata v vezju na način, kjer njuna vsota ali produkt določa časovno konstanto oz. dušenje (npr. zaporedna vezava v isti zanki s kondenzatorjem).
-
-Z analizo vezave smo postavili hipotezo:
-*   **Zanka 1:** Vsebuje vir in RLC elemente, ki povzročajo nihanje.
-*   **Zanka 2:** Vsebuje vir in upor $R_3$ (znana pozicija $e$).
 
 ### 2. Matematično modeliranje (Prostor stanj)
 Za izbrano konfiguracijo smo zapisali enačbe vezja in jih prevedli v model prostora stanj oblike:
@@ -78,20 +73,7 @@ Končna simulacija (prikazana na vrhu dokumenta) kaže popolno ujemanje s priča
     *   Tok tuljave konvergira k $-2.5 \text{ A}$.
     *   Napetost kondenzatorja konvergira k $-5.0 \text{ V}$.
 
-## Navodila za pogon
-
-Za zagon simulacije in izris grafov potrebujete nameščen Python in naslednje knjižnice:
-
-```bash
-pip install numpy scipy matplotlib
-```
-
-Zagon skripte:
-```bash
-python dodatna_naloga.py
-```
-
 ---
-**Avtor rešitve:** [Tvoje Ime]
-**Predmet:** Analiza sistemov
-**Leto:** 2025
+**Avtor rešitve:** Luka Žagar
+**Studijska smer in predmet:** Univerza v Ljubljani, Fakulteta za elektrotehniko, 3.letnik, Analiza sistemov
+**Leto:** december 2025
