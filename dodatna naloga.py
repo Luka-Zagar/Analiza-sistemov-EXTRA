@@ -1,63 +1,93 @@
 import numpy as np
-from scipy import linalg, integrate
+from scipy import integrate
 from matplotlib import pyplot as pp
 from matplotlib.font_manager import FontProperties
 
-# Nastavitve pisave
-font = FontProperties(family='sans-serif', weight='normal', size=11)
+font = FontProperties(family='sans-serif', weight='bold', size=11)
 
-def numericna_resitev_ivp(A, B, u, x_0, t):
-    """Numerična rešitev sistema DE 1. reda z uporabo solve_ivp."""
-    f = lambda t, x: np.dot(A, x) + np.dot(B, u(t))
-    solver = integrate.solve_ivp(f, (t[0], t[-1]), x_0, t_eval=t, method='RK45')
-    return solver.y
+# --- PARAMETRI NEZNANIH ELEMENTOV (L, C, R1, R2, R3, ig, ug) ---
+# "a" - upor R1
+# "b" - kondenzator C
+# "c" - upor R2
+# "d" - tuljava L
+# "e" - upor R3 (določena vrednost)
 
-def izris_loceno(t, x, naslov):
-    """Izris toka in napetosti v dveh ločenih grafih, enega pod drugim."""
-    fig, (ax1, ax2) = pp.subplots(2, 1, figsize=(10, 8), sharex=True, dpi=100)
-    
-    # Prvi graf: Tok skozi tuljavo
-    ax1.plot(t, x[0,:], label=r"$i_L(t)$", color='#1f77b4', linewidth=2)
-    ax1.set_ylabel("Tok [A]", fontproperties=font)
-    ax1.set_title(naslov, fontproperties=font)
-    ax1.grid(True, linestyle=':', alpha=0.6)
-    ax1.legend(loc='upper right')
-    
-    # Drugi graf: Napetost na kondenzatorju
-    ax2.plot(t, x[1,:], label=r"$v_C(t)$", color='#ff7f0e', linewidth=2)
-    ax2.set_ylabel("Napetost [V]", fontproperties=font)
-    ax2.set_xlabel("Čas [s]", fontproperties=font)
-    ax2.grid(True, linestyle=':', alpha=0.6)
-    ax2.legend(loc='upper right')
-    
-    pp.tight_layout()
-    pp.show()
+# "s1" - napetostni vir ug (določena vrednost)
+# "s2" - tokovni vir ig (določena vrednost)
 
-# --- PARAMETRI SISTEMA ---
-L = 0.5  
-C = 1.3  
-R1 = 4.0  
-R2 = 1.6  
+L = 0.5 # H      
+C = 1.3 # F  
 
-# Matrike prostora stanj (izpeljane iz vezja)
-A = np.array([[0, 1/L], 
-              [-1/C, -1/(C * (R1 + R2))]])
+R1 = 2.0  # Ω      
+R2 = 2.4  # Ω
 
-B = np.array([[-1/L, 0], 
-              [1/(C * (R1 + R2)), R1/(C * (R1 + R2))]])
+# --- MATRIKE ENAČBE STANJ ---
+A = np.array([
+    [0,  -1/L],
+    [1/C,  -1/(C*(R1+R2))]
+])
 
-# Začetni pogoji (prebrano iz grafov ob t=0)
-# iL(0) je cca -1.2 A, vC(0) je -5.0 V
-x_0 = np.array([-1.2, -5.0]) 
+B = np.array([
+    [0,  -1/L],
+    [R1/(C*(R1+R2)),  0]
+])
 
-# Vzbujanje (v_g = 5V, i_g = 3A)
-u = lambda t: np.array([5.0, 3.0])
+# --- VEKTOR VZBUJANJA (konstantna vira) ---
+u_const = np.array([3.0, 5.0]) # [ig, ug] 
 
-# Časovni interval simulacije
-t = np.linspace(0, 30, 1000)
+# --- ZAČETNI POGOJI (podatki odčitani iz grafa) ---
+x0 = np.array([-1.13, -5.0]) # [iL(0), uC(0)]]
 
-# Izračun rešitve
-x_resitev = numericna_resitev_ivp(A, B, u, x_0, t)
+def model(t, x):
+    return A @ x + B @ u_const
 
-# Izris rezultatov
-izris_loceno(t, x_resitev, "Časovni odziv stanja sistema (ločena prikaza)")
+# --- SIMULACIJA ---
+t_start = 0
+t_stop = 30
+
+t_eval = np.linspace(t_start, t_stop, 1000) # (start, stop, number of samples)
+solve = integrate.solve_ivp(model, (t_start, t_stop), x0, t_eval=t_eval)
+
+# --- VIZUALIZACIJA ---
+fig, (ax1, ax2) = pp.subplots(2, 1, figsize=(10, 8), sharex=True, dpi=100)
+
+# iL graf (Tok skozi tuljavo)
+ax1.plot(solve.t, solve.y[0], color='navy', lw=2, label='simulacija $i_L(t)$')
+ax1.axhline(-2.5, color='r', linestyle='--', label='asimptota (-2.5A)') # Teoretična vrednost
+ax1.set_ylabel("tok $i_L$ [A]")
+ax1.set_title("TOK SKOZI TULJAVO, KO SKLENEMO ZUNANJE STIKALO", fontproperties=font)
+ax1.grid(True, linestyle=':', alpha=0.7)
+ax1.legend(loc='upper right')
+
+# vC graf (Napetost na kondenzatorju) [cite: 52]
+ax2.plot(solve.t, solve.y[1], color='darkorange', lw=2, label='simulacija $v_C(t)$')
+ax2.axhline(-5.0, color='r', linestyle='--', label='asimptota (-5V)')
+ax2.set_ylabel("napetost $v_C$ [V]")
+ax2.set_xlabel("čas $t$ [s]")
+ax2.set_title("NAPETOST NA KONDEZATORJU, KO SKLENEMO ZUNANJE STIKALO", fontproperties=font)
+ax2.grid(True, linestyle=':', alpha=0.7)
+ax2.legend(loc='upper right')
+
+pp.tight_layout()
+pp.show()
+
+# PREDHODNI TEST s KONFIGURACIJO
+# "a" - upor R1
+# "b" - tuljava L
+# "c" - upor R2
+# "d" - kondenzator C
+# "e" - upor R3 (določena vrednost)
+
+# "s1" - napetostni vir ug (določena vrednost)
+# "s2" - tokovni vir ig (določena vrednost)
+
+# --- MATRIKE ENAČBE STANJ ---
+# A = np.array([
+#    [0,  -1/L],
+#    [1/C,  -1/(C*(R1+R2))]
+# ])
+
+# B = np.array([
+#    [0,  -1/L],
+#    [-R2/(C*(R1+R2)),  -1/(C*(R1+R2))]
+# ])'''
