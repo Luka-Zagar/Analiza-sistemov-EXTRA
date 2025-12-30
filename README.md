@@ -2,8 +2,6 @@
 
 Ta repozitorij vsebuje rešitev dodatne naloge pri predmetu **Analiza sistemov**. Projekt zajema "reverse engineering" (obratni inženiring) neznanega električnega vezja na podlagi vhodno-izhodnih podatkov, omejene topologije in delnih informacij o komponentah.
 
-![Rezultat simulacije](vizualizacija.png)
-
 ## Opis problema
 
 Naloga predstavlja "črno škatlico" z delno znano shemo, ki vsebuje:
