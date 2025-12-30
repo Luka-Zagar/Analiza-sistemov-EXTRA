@@ -12,7 +12,7 @@ Naloga predstavlja "črno škatlico" z delno znano shemo, ki vsebuje:
 
 Cilj naloge je bil določiti točno postavitev elementov in njihove vrednosti iz končnega nabora možnih vrednosti, pri čemer so bile ključne informacije skrite v obliki prehodnega pojava in stabilnega stanja.
 
-## 🔍 Metodologija reševanja
+## Metodologija reševanja
 
 Reševanje je potekalo v treh fazah: topološka analiza, določitev parametrov in validacija s simulacijo.
 
@@ -73,5 +73,7 @@ Končna simulacija (prikazana na vrhu dokumenta) kaže popolno ujemanje s priča
 
 ---
 **Avtor rešitve:** Luka Žagar
+
 **Studijska smer in predmet:** Univerza v Ljubljani, Fakulteta za elektrotehniko, 3.letnik, Analiza sistemov
+
 **Leto:** december 2025
